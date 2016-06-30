@@ -1,0 +1,4 @@
+date,number,code,login,version,payway,chargePeriod_text,chargeYear,coveragePeriod,coverageYear,plan,unit,getamount,payamount,customizedPrem,flexible,paytype,annualmoney,addcode0,addpaytype0,addperiod0,addyear0,addamount0,addplan0,addunit0,addcode1,addpaytype1,addperiod1,addyear1,addamount1,addplan1,addunit1,pay
+105/06/17,00000632100,QWC,STDB0001,G,12,1,20,1,1,1,1,1000000,1000000,100000,10000,12,30000,,1,1,10,10000,4,4,,1,1,10,10000,3,3,11
+105/06/17,00000632110,QIS,STDB0001,G,12,1,20,1,1,1,1,1000000,1000000,100000,10000,12,30000,,1,1,10,10000,4,4,,1,1,10,10000,3,3,11
+105/06/17,00000632120,MDD,STDB0001,G,12,1,20,1,1,1,1,1000000,1000000,100000,10000,12,30000,,1,1,10,10000,4,4,,1,1,10,10000,3,3,11

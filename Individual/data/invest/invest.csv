@@ -1,0 +1,4 @@
+date,number,code,login,birthDay,gender,payway,getamount,payamount,flexible,paytype,annualmoney,type,fundcode0,ratio0,fundcode1,ratio1,fundcode2,ratio2,addcode0,addpaytype0,addperiod0,addyear0,addamount0,addplan0,addunit0,addcode1,addpaytype1,addperiod1,addyear1,addamount1,addplan1,addunit1,pay
+105/06/17,00000650370,VA,STDB0001,750101,1,12,12000,12000,0,12,12000,367,SVSA,100,,20,,,,1,1,10,1598,3,3,,1,1,20,1790,3,3,11
+105/06/17,00000650340,NVA,STDB0001,750101,1,12,12000,12000,0,12,12000,367,ACMAI,100,,20,,,,1,1,10,1598,3,3,,1,1,20,1790,3,3,11
+105/06/17,00000650350,VNL,STDB0001,750101,1,12,12000,12000,0,12,12000,367,ACMAI,100,,20,,,,1,1,10,1598,3,3,,1,1,20,1790,3,3,11
