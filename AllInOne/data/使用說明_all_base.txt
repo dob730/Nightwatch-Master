@@ -1,0 +1,20 @@
+此資料夾用來Smoke
+但是整個還在測試當中
+
+使用時候請開啟cmd, 指定到目錄之後, 輸入 nightwatch -t xxx.js (xxx為要執行的js名稱)
+
+使用前需要注意幾個事項
+
+1. 更動csv保單號碼 
+欄位 number 為保單號碼, 請自行去外部契約登入去拿新的號碼
+
+2. 如果要更動不同的項目請看一下csv欄位首欄的英文字
+
+3. 目前可以更動的 for loop 數為下面幾個
+ 3.1 投資標的：Default為三個, 如要更動投資標的數目, 請尋找 T_funding更改數目
+ 3.2 附約 Default 兩個, 如果要增加減少數目,  add additional product = for loop 數目
+ 3.2 傳統型審閱聲明 Default 兩個(跟著附約), 如果要增加減少數目,  trad claim = for loop 數目
+不需要進行註解, 如果不需要那麼多的量只要csv保持該欄空白就好
+EX T_funding 只要輸入2筆, funcode2 設為空白就好
+
+4. 傳統傷害行受益人Default設定身故受益人, 年金和投資設定年金受益人
