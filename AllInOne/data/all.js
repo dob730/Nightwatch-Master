@@ -5,54 +5,54 @@ var Converter = require("csvtojson").Converter;
 var converter = new Converter({
   checkType: false
 });
-//read from file 
+
 fs.createReadStream("data/all/all.csv",[{flags: 'rs+'}]).pipe(converter);
 var moment = require('moment');
 var now = moment().format("YYYY_MMM_Do_h.mm.ss a");
 var writeStream = fs.createWriteStream("data/all/"+ now +".csv", [{flags: 'rs+'}]);
 writeStream.write('Number'+','+'ID'+','+'Product'+','+'Payamount'+','+'Result'); 
-var flag = false;
+
+
+//起始式
 module.exports = {
   'Open all' : function (browser) { converter.on("end_parsed", function (jsonArray) { for (var i = 0; i < jsonArray.length ; i++ )  { 
       
-      if(flag == true){}else{
+      //UserAccount login   第一次叫程式告訴你登入
+                            
+    if(i==0){
       browser
         .useCss()
         .url('http://210.13.77.85:12000/ls/logoutPage.do')
         .waitForElementPresent('body', 30000)
-        .setValue('input[name=userName]', 'IBM28')
+        .clearValue('input[name=userName]')
+        .setValue('input[name=userName]', 'IBM2')
         .clearValue('input[name=userPassword]')
         .setValue('input[name=userPassword]', 'eBao123')
         .click('input[name=Submit2]')
         .waitForElementPresent('div[classname=header_logo_ls]', 10000) 
-        .pause(1000)  
-        .url('http://210.13.77.85:12000/ls/pa/outerAcceptance.do?syskey_request_token=32f6ac8c7200671c71e43cd5ef4fc2ad&current_module_id=1000003287')
-        .waitForElementPresent('input[name=submissionDate_minguo]', 10000) 
-        .pause(1000)
-        }
+    }
+               
       
-      flag = true
+                   
+
 
         // Open New 
         browser
         .url('http://210.13.77.85:12000/ls/pa/outerAcceptance.do?syskey_request_token=32f6ac8c7200671c71e43cd5ef4fc2ad&current_module_id=1000003287')
-    	  .clearValue('input[name=submissionDate_minguo]')
-    	  .setValue('input[name=submissionDate_minguo]', jsonArray[i]['date'])
     	  .useXpath()
     	  .setValue("//input[@name='brbdAcceptanceVO.policyCode_text']",jsonArray[i]['number'])
         .getAttribute("//input[@name='brbdAcceptanceVO.policyCode_text']", "value" ,function(result){
-        writeStream.write('\r\n'+result.value+',')
+        writeStream.write('\r\n'+result.value+',')//紀錄至csv檔
         })
-        var id1 = makeid()
+        var id1 = makeid()//由函式產生身分證字號
         browser
-        .setValue("//input[@name='brbdAcceptanceVO.phCertiCode']", id1)
-        .setValue("//input[@name='brbdAcceptanceVO.insuredCertiCode']", id1)
+        .setValue("//input[@name='brbdAcceptanceVO.phCertiCode']", id1)//要保人ID
+        .setValue("//input[@name='brbdAcceptanceVO.insuredCertiCode']", id1)//要保人=被保人
         .getAttribute("//input[@name='brbdAcceptanceVO.insuredCertiCode']", "value" ,function(result){
         writeStream.write(result.value+',')
         })
     	  .setValue("//input[@name='brbdAcceptanceVO.productId_text']", jsonArray[i]['code'])
         .getAttribute("//input[@name='brbdAcceptanceVO.productId_text']", "value" ,function(result){
-          result.value
         writeStream.write(result.value+',')
         })
     	  .setValue("//input[@name='brbdAcceptanceVO.registerCode']", jsonArray[i]['login'])
@@ -69,6 +69,7 @@ module.exports = {
         .pause(2000)
   	  	.click("//tr[@classname='odd']/td[@classname='table_column odd']")
   	  	.click("//input[@name='btnReassign']")
+        .pause(2000)
   	  	.waitForElementPresent("//input[@name='userId']", 10000)
   	  	.click("//input[@name='userId']")
   	  	.click("//input[@classname='button btn']")
@@ -100,7 +101,7 @@ module.exports = {
         var name1 = ('Kobe'+Math.floor((Math.random() * 1000000) + 1));
         browser
         .setValue("//input[@name='policyHolderName']", name1)
-        .setValue("//input[@name='policyHolderBirthDay_minguo']", '700101')
+        .setValue("//input[@name='policyHolderBirthDay_minguo']", jsonArray[i]['birthDay'])
         .setValue("//input[@name='policyHolderGender_text']", '1')
         .setValue("//input[@name='policyHolderJobCateId_text']", 'A101')
         .setValue("//input[@name='policyHolderJobClass']", '1')
@@ -330,7 +331,7 @@ module.exports = {
 
         browser
         .getAttribute("//input[@name='coverage.internalId']", "value" ,function(result){
-          if(result.value == 'RVA'){
+          if(result.value == 'RVA'|| result.value == 'VNA'){
               browser
               .click("(//input[@name='__btnSave'])[position()=2]")
               .click("(//input[@name='__btnSave'])[position()=2]")
@@ -781,13 +782,6 @@ module.exports = {
     return namelist;
 
   };//end function
-function insureCateAry(code){
-  var ary = [];
-  ary.push(code);
-  return ary;
-}//end function
-
-
 
 function makeid(sList){
   var ALP_STR = "ABCDEFGHJKLMNPQRSTUVXYWZIO";
