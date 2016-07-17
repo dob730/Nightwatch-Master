@@ -1,11 +1,11 @@
-// Converter Class 
+// Converter Class  ,fs (file system) 
 var fs = require('fs');
 var Converter = require("csvtojson").Converter;
 //store csv
 var converter = new Converter({
   checkType: false
 });
-
+//file string物件讀入資料
 fs.createReadStream("data/all/all.csv",[{flags: 'rs+'}]).pipe(converter);
 var moment = require('moment');
 var now = moment().format("YYYY_MMM_Do_h.mm.ss a");
@@ -13,8 +13,8 @@ var writeStream = fs.createWriteStream("data/all/"+ now +".csv", [{flags: 'rs+'}
 writeStream.write('Number'+','+'ID'+','+'Product'+','+'Payamount'+','+'Result'); 
 
 
-//起始式
-module.exports = {
+//起始式 
+module.exports = {                //end parsered 函式呼叫傳入物件，"end_parsered"變數名稱
   'Open all' : function (browser) { converter.on("end_parsed", function (jsonArray) { for (var i = 0; i < jsonArray.length ; i++ )  { 
       
       //UserAccount login   第一次叫程式告訴你登入
@@ -25,7 +25,7 @@ module.exports = {
         .url('http://210.13.77.85:12000/ls/logoutPage.do')
         .waitForElementPresent('body', 30000)
         .clearValue('input[name=userName]')
-        .setValue('input[name=userName]', 'IBM2')
+        .setValue('input[name=userName]', 'IBM28')
         .clearValue('input[name=userPassword]')
         .setValue('input[name=userPassword]', 'eBao123')
         .click('input[name=Submit2]')
@@ -328,17 +328,17 @@ module.exports = {
           })
 
         },false)}(i)
-
         browser
         .getAttribute("//input[@name='coverage.internalId']", "value" ,function(result){
           if(result.value == 'RVA'|| result.value == 'VNA'){
+              
               browser
-              .click("(//input[@name='__btnSave'])[position()=2]")
-              .click("(//input[@name='__btnSave'])[position()=2]")
+              // 為了強制閃過原來檢核隨便填值
+              .setValue("//input[@name='bene.bankAccount']",'10000')
+              .click("(//input[@name='__btnSave'])[position()=2]",function(){browser.accept_alert()})
               .click("(//input[@name='__btnSave'])[position()=2]")
             }else{
             browser
-            .click("(//input[@name='__btnSave'])[position()=2]")
             .click("(//input[@name='__btnSave'])[position()=2]")
             }
           })  
@@ -458,17 +458,20 @@ module.exports = {
 
         //benificial person
         browser
-        .setValue("//input[@name='bene.nbBeneficiaryType']", jsonArray[i]['benefitperson'])
-        .setValue("//input[@name='bene.designation']", '1')
-        .setValue("//input[@name='bene.name']", 'Kobe'+Math.floor((Math.random() * 1000000) + 1))
-        .clearValue("//input[@name='bene.certiCode']") 
+        .setValue("//input[@name='beneficary.nbBeneficiaryType']", jsonArray[i]['benefitperson'])
+        .setValue("//input[@name='beneficary.designation']", '1')
+        .setValue("//input[@name='beneficary.name']", 'Kobe'+Math.floor((Math.random() * 1000000) + 1))
+        .clearValue("//input[@name='beneficary.certiCode']") 
         var id2 = makeid()
         browser
-        .setValue("//input[@name='bene.certiCode']", id2)
-        .clearValue("//input[@name='bene.shareOrder']") 
-        .setValue("//input[@name='bene.shareOrder']", '1') 
-        .clearValue("//input[@name='bene.shareRate']") 
-        .setValue("//input[@name='bene.shareRate']", '100') 
+        .setValue("//input[@name='beneficary.certiCode']", id2)
+        //benificial順位
+        // .clearValue("//input[@name='beneficary.shareOrder']") 
+        // .setValue("//input[@name='beneficary.shareOrder']",1) 
+        .clearValue("//input[@name='beneficary.avgIndi_text']") 
+        .setValue("//input[@name='beneficary.avgIndi_text']", '2') 
+        .clearValue("//input[@name='beneficary.shareRate']") 
+        .setValue("//input[@name='beneficary.shareRate']", '100') 
         .click("(//input[@name='__btnSave'])[position()=4]")
         .waitForElementNotPresent("//div[@classname='maskdivgen']",100000)
         .waitForElementPresent("(//input[@name='__btnSave'])[position()=3]", 30000)
@@ -758,10 +761,31 @@ module.exports = {
         .click("//input[@classname='button btn']")
         .waitForElementPresent("//div[@classname='header_logo_ls']", 30000)
         .pause(3000)
+        // .getText("(//td[@classname='table_text_td'])[position()=3]//div[@classname='input']",function(result){
+        //   writeStream.write(result.value)
+        // })
+        
+        //阿蜜陀佛過可以 .saveScreenshot('./data/all/' +jsonArray[i]['number']+'search.png')
+
+
+        //阿蜜陀佛
+        .url('http://210.13.77.85:12000/ls/qry/commonquery.CommonQuery.do?syskey_request_token=d83d39e2acdfa20e8f903f934aa511ab&current_module_id=301744')
+        .waitForElementPresent("//input[@classname='button btn']", 30000) 
+        .click("//input[@name='qryType']")
+        .pause(1000)
+        .setValue("//input[@name='policyCode_text']", jsonArray[i]['number'])
+        .pause(1000)
+        .click("//input[@name='qryType']")
+        .pause(1000)
+        .click("//input[@classname='button btn']")
+        .waitForElementPresent("//div[@classname='header_logo_ls']", 30000)
+        .pause(3000)
+        .saveScreenshot('./data/all/' +jsonArray[i]['number']+'search.png')
         .getText("(//td[@classname='table_text_td'])[position()=3]//div[@classname='input']",function(result){
           writeStream.write(result.value)
         })
         .saveScreenshot('./data/all/' +jsonArray[i]['number']+'search.png')
+        //end of 阿密陀佛一定生效
 
    }})
   }
