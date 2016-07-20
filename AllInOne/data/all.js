@@ -93,6 +93,7 @@ module.exports = {                //end parsered 函式呼叫傳入物件，"end
   	  	.waitForElementPresent("(//input[@name='__btnSave'])[position()=3]", 30000)
         .pause(1000)  
   	  	.setValue("//input[@name='applyVersion']", jsonArray[i]['version']) 
+        .click("//input[@name='applyDate_minguo']", function(){browser.accept_alert()})
   	  	.setValue("//input[@name='applyDate_minguo']", jsonArray[i]['date']) 
   	  	.click("//input[@name='rowid']") 
   	  	.click("//input[@name='__btnModify']")
