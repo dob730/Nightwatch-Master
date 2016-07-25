@@ -18,14 +18,14 @@ module.exports = {
   'Open all' : function (browser) { converter.on("end_parsed", function (jsonArray) { for (var i = 0; i < jsonArray.length ; i++ )  { 
       
       //UserAccount login   第一次叫程式告訴你登入
-                             
+                            
     if(i==0){
       browser
         .useCss()
         .url('http://10.67.67.4:9082/ls/logoutPage.do')
         .waitForElementPresent('body', 30000)
         .clearValue('input[name=userName]')
-        .setValue('input[name=userName]', 'IBM2')
+        .setValue('input[name=userName]', 'IBM1')
         .clearValue('input[name=userPassword]')
         .setValue('input[name=userPassword]', 'eBao123')
         .click('input[name=Submit2]')
@@ -92,6 +92,7 @@ module.exports = {
         .waitForElementPresent("(//input[@name='__btnSave'])[position()=3]", 30000)
         .pause(1000)  
         .setValue("//input[@name='applyVersion']", jsonArray[i]['version']) 
+        .click("//input[@name='applyDate_minguo']", function(){browser.accept_alert()})
         .setValue("//input[@name='applyDate_minguo']", jsonArray[i]['date']) 
         .click("//input[@name='rowid']") 
         .click("//input[@name='__btnModify']")
@@ -329,15 +330,16 @@ module.exports = {
         },false)}(i)
 
         browser
-        .getAttribute("//input[@name='coverage.internalId']", "value" ,function(result){
+         .getAttribute("//input[@name='coverage.internalId']", "value" ,function(result){
           if(result.value == 'RVA'|| result.value == 'VNA'){
+              
               browser
-              .click("(//input[@name='__btnSave'])[position()=2]")
-              .click("(//input[@name='__btnSave'])[position()=2]")
+              // 為了強制閃過原來檢核隨便填值
+              .setValue("//input[@name='bene.bankAccount']",'10000')
+              .click("(//input[@name='__btnSave'])[position()=2]",function(){browser.accept_alert()})
               .click("(//input[@name='__btnSave'])[position()=2]")
             }else{
             browser
-            .click("(//input[@name='__btnSave'])[position()=2]")
             .click("(//input[@name='__btnSave'])[position()=2]")
             }
           })  
@@ -457,17 +459,20 @@ module.exports = {
 
         //benificial person
         browser
-        .setValue("//input[@name='bene.nbBeneficiaryType']", jsonArray[i]['benefitperson'])
-        .setValue("//input[@name='bene.designation']", '1')
-        .setValue("//input[@name='bene.name']", 'Kobe'+Math.floor((Math.random() * 1000000) + 1))
-        .clearValue("//input[@name='bene.certiCode']") 
+        .setValue("//input[@name='beneficary.nbBeneficiaryType']", jsonArray[i]['benefitperson'])
+        .setValue("//input[@name='beneficary.designation']", '1')
+        .setValue("//input[@name='beneficary.name']", 'Kobe'+Math.floor((Math.random() * 1000000) + 1))
+        .clearValue("//input[@name='beneficary.certiCode']") 
         var id2 = makeid()
         browser
-        .setValue("//input[@name='bene.certiCode']", id2)
-        .clearValue("//input[@name='bene.shareOrder']") 
-        .setValue("//input[@name='bene.shareOrder']", '1') 
-        .clearValue("//input[@name='bene.shareRate']") 
-        .setValue("//input[@name='bene.shareRate']", '100') 
+        .setValue("//input[@name='beneficary.certiCode']", id2)
+        //benificial順位
+        // .clearValue("//input[@name='beneficary.shareOrder']") 
+        // .setValue("//input[@name='beneficary.shareOrder']",1) 
+        .clearValue("//input[@name='beneficary.avgIndi_text']") 
+        .setValue("//input[@name='beneficary.avgIndi_text']", '2') 
+        .clearValue("//input[@name='beneficary.shareRate']") 
+        .setValue("//input[@name='beneficary.shareRate']", '100') 
         .click("(//input[@name='__btnSave'])[position()=4]")
         .waitForElementNotPresent("//div[@classname='maskdivgen']",100000)
         .waitForElementPresent("(//input[@name='__btnSave'])[position()=3]", 30000)
@@ -627,140 +632,140 @@ module.exports = {
 
 
 
-        // Pay money
-        .useXpath()
-        .url('http://10.67.67.4:9082/ls/arap/cash/recv/counter/search.do?syskey_request_token=752ba247eba263311fb36ec58db42536&current_module_id=300168')
-        .waitForElementPresent("//input[@classname='button btn']", 30000) 
-        .setValue("//input[@name='policyNumber']", jsonArray[i]['number'])
-        .click("//input[@classname='button btn']")
-        .waitForElementPresent("(//input[@classname='button btn'])[position()=1]", 30000) 
-        !function outer(i) { browser
-        .elementIdDisplayed("//input[@name='coverage.stdPremAf']", function(){ 
-          if (jsonArray[i]['pay'] == 2){ browser
-            .setValue("//input[@name='payMode_text']", jsonArray[i]['pay'])
-            .click("//input[@name='voucherDate_minguo']")
-            .pause(2000)
-            .setValue("//input[@name='voucherDate_minguo']", jsonArray[i]['date'])
-            .click("//select[@name='account']")
-            .keys(['\uE015', '\uE006'])
-            .setValue("//input[@name='creditCardNo_part0']", '5410')
-            .setValue("//input[@name='creditCardNo_part1']", '0001')
-            .setValue("//input[@name='creditCardNo_part2']", '1349')
-            .setValue("//input[@name='creditCardNo_part3']", '4290')
-            .setValue("//input[@name='creditCardNote']", '3688')
-            .setValue("//input[@name='creditValidYyyymm_Yyyy']", '2024')
-            .setValue("//input[@name='creditValidYyyymm_Mm']", '10')
+        // // Pay money
+        // .useXpath()
+        // .url('http://10.67.67.4:9082/ls/arap/cash/recv/counter/search.do?syskey_request_token=752ba247eba263311fb36ec58db42536&current_module_id=300168')
+        // .waitForElementPresent("//input[@classname='button btn']", 30000) 
+        // .setValue("//input[@name='policyNumber']", jsonArray[i]['number'])
+        // .click("//input[@classname='button btn']")
+        // .waitForElementPresent("(//input[@classname='button btn'])[position()=1]", 30000) 
+        // !function outer(i) { browser
+        // .elementIdDisplayed("//input[@name='coverage.stdPremAf']", function(){ 
+        //   if (jsonArray[i]['pay'] == 2){ browser
+        //     .setValue("//input[@name='payMode_text']", jsonArray[i]['pay'])
+        //     .click("//input[@name='voucherDate_minguo']")
+        //     .pause(2000)
+        //     .setValue("//input[@name='voucherDate_minguo']", jsonArray[i]['date'])
+        //     .click("//select[@name='account']")
+        //     .keys(['\uE015', '\uE006'])
+        //     .setValue("//input[@name='creditCardNo_part0']", '5410')
+        //     .setValue("//input[@name='creditCardNo_part1']", '0001')
+        //     .setValue("//input[@name='creditCardNo_part2']", '1349')
+        //     .setValue("//input[@name='creditCardNo_part3']", '4290')
+        //     .setValue("//input[@name='creditCardNote']", '3688')
+        //     .setValue("//input[@name='creditValidYyyymm_Yyyy']", '2024')
+        //     .setValue("//input[@name='creditValidYyyymm_Mm']", '10')
 
-          } else if (jsonArray[i]['pay'] == 6){ browser
-            .setValue("//input[@name='payMode_text']", jsonArray[i]['pay'])
-            .click("//input[@name='voucherDate_minguo']")
-            .pause(2000)
-            .setValue("//input[@name='chequeNumber']", '2100004')
-            .setValue("//input[@name='chequePayUnit']", '010050061')
-            .setValue("//input[@name='chequeAccount']", '232168223001')
-            .setValue("//input[@name='chequeDueDate_1_minguo']", jsonArray[i]['date'])
-            .setValue("//input[@name='chequeHolder']", '4290')
-            .click("//select[@name='chequeRelationId']")
-            .keys(['\uE015', '\uE006'])
+        //   } else if (jsonArray[i]['pay'] == 6){ browser
+        //     .setValue("//input[@name='payMode_text']", jsonArray[i]['pay'])
+        //     .click("//input[@name='voucherDate_minguo']")
+        //     .pause(2000)
+        //     .setValue("//input[@name='chequeNumber']", '2100004')
+        //     .setValue("//input[@name='chequePayUnit']", '010050061')
+        //     .setValue("//input[@name='chequeAccount']", '232168223001')
+        //     .setValue("//input[@name='chequeDueDate_1_minguo']", jsonArray[i]['date'])
+        //     .setValue("//input[@name='chequeHolder']", '4290')
+        //     .click("//select[@name='chequeRelationId']")
+        //     .keys(['\uE015', '\uE006'])
 
-          } else if (jsonArray[i]['pay'] == 3){ browser 
-            .setValue("//input[@name='payMode_text']", jsonArray[i]['pay'])
-            .click("//input[@name='voucherDate_minguo']")
-            .pause(2000)
-            .setValue("//input[@name='voucherDate_minguo']", jsonArray[i]['date'])
-            .click("//select[@name='account']")
-            .keys(['\uE015', '\uE006'])
-            .click("//input[@name='sameToProposerCheck']")
-
-
-          } else { browser 
-            .setValue("//input[@name='payMode_text']", jsonArray[i]['pay'])
-            .click("//input[@name='voucherDate_minguo']")
-            .pause(2000)
-            .setValue("//input[@name='voucherDate_minguo']", jsonArray[i]['date'])
-            .click("//select[@name='account']")
-            .keys(['\uE015', '\uE006'])
-          }
-
-          browser 
-          .getAttribute("//input[@name='totalIP']", "value" ,function(result){
-            if(result.value == '0') {writeStream.write('0'+',')}  else {
-              var money = result.value
-              money = money.replace(/,/g,"")
-              writeStream.write(money+',')
-            }
-            if (jsonArray[i]['pay'] == 6){
-            browser
-            .setValue("//input[@name='pay_amount']",result.value)
-            .setValue("//input[@name='chequeAmount']",result.value)
-            } else {
-              browser
-              .setValue("//input[@name='pay_amount']",result.value)
-              .setValue("//input[@name='voucherAmount']",result.value)
-            }
-          })
-        },false)}(i)
-
-        browser 
-        .click("(//input[@classname='button btn'])[position()=1]")
-        .waitForElementPresent("//table[@id='table2']", 30000)
-        .click("(//input[@classname='button btn'])[position()=3]")
-        .click("(//input[@classname='button btn'])[position()=4]")
-        .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
-        .saveScreenshot('./data/invest/' +jsonArray[i]['number']+'payamount.png')
+        //   } else if (jsonArray[i]['pay'] == 3){ browser 
+        //     .setValue("//input[@name='payMode_text']", jsonArray[i]['pay'])
+        //     .click("//input[@name='voucherDate_minguo']")
+        //     .pause(2000)
+        //     .setValue("//input[@name='voucherDate_minguo']", jsonArray[i]['date'])
+        //     .click("//select[@name='account']")
+        //     .keys(['\uE015', '\uE006'])
+        //     .click("//input[@name='sameToProposerCheck']")
 
 
-        // turn to manual confirmation
-        .url('http://10.67.67.4:9082/ls/pub/workflow/GetWorkList.do?procName=PA Process&taskName=ManualUW&taskId=8&syskey_request_token=752ba247eba263311fb36ec58db42536')
-        .waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
-        .setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
-        .click("//input[@name='search']")
-        .waitForElementVisible("//tr[@classname='odd']", 10000)
-        .pause(3000)
-        .click("//tr[@classname='odd']/td[@classname='table_column odd']")
-        .click("//input[@name='claim']")
-        .waitForElementPresent("//input[@name='btnSubmit']", 10000)
-        .click("//input[@name='btnOutstandingIssues']")
-        .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
-        .elements("xpath","//select[@name='uwRuleStatusId']", function(result){
-        console.log(result.value.length)
-          for (var a=1; a < (result.value.length+1) ; a ++) {
-            !function outer(a) { 
-              browser
-              .click("(//select[@name='uwRuleStatusId'])[position()="+a+"]")
-              .keys(['\uE015','\uE015','\uE006'])
-              .pause(1000)
-            }(a)
-          }
-        })
-        browser
-        .click("//input[@name='btnSaveUwIssuesList']")
-        .pause(1000)
-        .click("//input[@name='btnCancel']")
-        .pause(1000)
-        .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
-        .pause(5000)
-        .click("//input[@name='btnSubmit']" , function(){browser
-          .pause(2000)
-          .accept_alert()})
-        .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
+        //   } else { browser 
+        //     .setValue("//input[@name='payMode_text']", jsonArray[i]['pay'])
+        //     .click("//input[@name='voucherDate_minguo']")
+        //     .pause(2000)
+        //     .setValue("//input[@name='voucherDate_minguo']", jsonArray[i]['date'])
+        //     .click("//select[@name='account']")
+        //     .keys(['\uE015', '\uE006'])
+        //   }
 
-        // Check
-        .url('http://10.67.67.4:9082/ls/qry/commonquery.CommonQuery.do?syskey_request_token=d83d39e2acdfa20e8f903f934aa511ab&current_module_id=301744')
-        .waitForElementPresent("//input[@classname='button btn']", 30000) 
-        .click("//input[@name='qryType']")
-        .pause(1000)
-        .setValue("//input[@name='policyCode_text']", jsonArray[i]['number'])
-        .pause(1000)
-        .click("//input[@name='qryType']")
-        .pause(1000)
-        .click("//input[@classname='button btn']")
-        .waitForElementPresent("//div[@classname='header_logo_ls']", 30000)
-        .pause(3000)
-        .getText("(//td[@classname='table_text_td'])[position()=3]//div[@classname='input']",function(result){
-          writeStream.write(result.value)
-        })
-        .saveScreenshot('./data/all/' +jsonArray[i]['number']+'search.png')
+        //   browser 
+        //   .getAttribute("//input[@name='totalIP']", "value" ,function(result){
+        //     if(result.value == '0') {writeStream.write('0'+',')}  else {
+        //       var money = result.value
+        //       money = money.replace(/,/g,"")
+        //       writeStream.write(money+',')
+        //     }
+        //     if (jsonArray[i]['pay'] == 6){
+        //     browser
+        //     .setValue("//input[@name='pay_amount']",result.value)
+        //     .setValue("//input[@name='chequeAmount']",result.value)
+        //     } else {
+        //       browser
+        //       .setValue("//input[@name='pay_amount']",result.value)
+        //       .setValue("//input[@name='voucherAmount']",result.value)
+        //     }
+        //   })
+        // },false)}(i)
+
+        // browser 
+        // .click("(//input[@classname='button btn'])[position()=1]")
+        // .waitForElementPresent("//table[@id='table2']", 30000)
+        // .click("(//input[@classname='button btn'])[position()=3]")
+        // .click("(//input[@classname='button btn'])[position()=4]")
+        // .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
+        // .saveScreenshot('./data/invest/' +jsonArray[i]['number']+'payamount.png')
+
+
+        // // turn to manual confirmation
+        // .url('http://10.67.67.4:9082/ls/pub/workflow/GetWorkList.do?procName=PA Process&taskName=ManualUW&taskId=8&syskey_request_token=752ba247eba263311fb36ec58db42536')
+        // .waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
+        // .setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
+        // .click("//input[@name='search']")
+        // .waitForElementVisible("//tr[@classname='odd']", 10000)
+        // .pause(3000)
+        // .click("//tr[@classname='odd']/td[@classname='table_column odd']")
+        // .click("//input[@name='claim']")
+        // .waitForElementPresent("//input[@name='btnSubmit']", 10000)
+        // .click("//input[@name='btnOutstandingIssues']")
+        // .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
+        // .elements("xpath","//select[@name='uwRuleStatusId']", function(result){
+        // console.log(result.value.length)
+        //   for (var a=1; a < (result.value.length+1) ; a ++) {
+        //     !function outer(a) { 
+        //       browser
+        //       .click("(//select[@name='uwRuleStatusId'])[position()="+a+"]")
+        //       .keys(['\uE015','\uE015','\uE006'])
+        //       .pause(1000)
+        //     }(a)
+        //   }
+        // })
+        // browser
+        // .click("//input[@name='btnSaveUwIssuesList']")
+        // .pause(1000)
+        // .click("//input[@name='btnCancel']")
+        // .pause(1000)
+        // .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
+        // .pause(5000)
+        // .click("//input[@name='btnSubmit']" , function(){browser
+        //   .pause(2000)
+        //   .accept_alert()})
+        // .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
+
+        // // Check
+        // .url('http://10.67.67.4:9082/ls/qry/commonquery.CommonQuery.do?syskey_request_token=d83d39e2acdfa20e8f903f934aa511ab&current_module_id=301744')
+        // .waitForElementPresent("//input[@classname='button btn']", 30000) 
+        // .click("//input[@name='qryType']")
+        // .pause(1000)
+        // .setValue("//input[@name='policyCode_text']", jsonArray[i]['number'])
+        // .pause(1000)
+        // .click("//input[@name='qryType']")
+        // .pause(1000)
+        // .click("//input[@classname='button btn']")
+        // .waitForElementPresent("//div[@classname='header_logo_ls']", 30000)
+        // .pause(3000)
+        // .getText("(//td[@classname='table_text_td'])[position()=3]//div[@classname='input']",function(result){
+        //   writeStream.write(result.value)
+        // })
+        // .saveScreenshot('./data/all/' +jsonArray[i]['number']+'search.png')
 
    }})
   }
