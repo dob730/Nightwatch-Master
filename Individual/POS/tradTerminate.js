@@ -35,7 +35,6 @@ module.exports = {
         .waitForElementPresent('div[classname=header_logo_ls]', 10000) 
     }
                
-
         browser
         .url(csUrl)
         .waitForElementPresent('div[classname=header_logo_ls]', 10000) 
