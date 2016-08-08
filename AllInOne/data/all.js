@@ -16,7 +16,7 @@ writeStream.write('Number'+','+'ID'+','+'Product'+','+'Payamount'+','+'Result');
 //起始式 
 module.exports = {                //end parsered 函式呼叫傳入物件，"end_parsered"變數名稱
   'Open all' : function (browser) { converter.on("end_parsed", function (jsonArray) { for (var i = 0; i < jsonArray.length ; i++ )  { 
-      
+   
       //UserAccount login   第一次叫程式告訴你登入
                             
     if(i==0){
@@ -31,16 +31,33 @@ module.exports = {                //end parsered 函式呼叫傳入物件，"end
         .click('input[name=Submit2]')
         .waitForElementPresent('div[classname=header_logo_ls]', 10000) 
     }
-               
-      
+       //change time
+       
+        !function outer(i){
+        browser
+        .useXpath()
+        .getText("//span[@id='timeLoc']",function(result){
+          var sysDate = result.value
+         if(sysDate!=jsonArray[i]['date']){
+        browser
+        .url('http://210.13.77.85:12000/ls/tool/setSysdateAction.do?syskey_request_token=136205f01cc68c74d534a3ac1e0dba25&current_module_id=301182')
+        .waitForElementPresent("//input[@name='conSysdate_minguo']", 10000)
+            .clearValue("//input[@name='conSysdate_minguo']")
+            .setValue("//input[@name='conSysdate_minguo']", jsonArray[i]['date'])
+            .click("(//input[@classname='button btn'])[position()=1]")
+            .pause(5000)  
+            } 
+          })        
+        }(i)
                    
 
 
         // Open New 
         browser
         .url('http://210.13.77.85:12000/ls/pa/outerAcceptance.do?syskey_request_token=32f6ac8c7200671c71e43cd5ef4fc2ad&current_module_id=1000003287')
-    	  .useXpath()
-    	  .setValue("//input[@name='brbdAcceptanceVO.policyCode_text']",jsonArray[i]['number'])
+        .useXpath()
+        .setValue("//input[@name='submissionDate_minguo']",jsonArray[i]['date'])
+        .setValue("//input[@name='brbdAcceptanceVO.policyCode_text']",jsonArray[i]['number'])
         .getAttribute("//input[@name='brbdAcceptanceVO.policyCode_text']", "value" ,function(result){
         writeStream.write('\r\n'+result.value+',')//紀錄至csv檔
         })
@@ -51,86 +68,109 @@ module.exports = {                //end parsered 函式呼叫傳入物件，"end
         .getAttribute("//input[@name='brbdAcceptanceVO.insuredCertiCode']", "value" ,function(result){
         writeStream.write(result.value+',')
         })
-    	  .setValue("//input[@name='brbdAcceptanceVO.productId_text']", jsonArray[i]['code'])
+        .setValue("//input[@name='brbdAcceptanceVO.productId_text']", jsonArray[i]['code'])
         .getAttribute("//input[@name='brbdAcceptanceVO.productId_text']", "value" ,function(result){
         writeStream.write(result.value+',')
         })
-    	  .setValue("//input[@name='brbdAcceptanceVO.registerCode']", jsonArray[i]['login'])
-    	  .setValue("//input[@name='brbdAcceptanceVO.acptOrg_text']", '')
-    	  .click("//input[@name='save']") 
 
-  	  	//Distribute to fill new
-  	  	.waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
-  	  	.url('http://210.13.77.85:12000/ls/pub/taskmonitor/taskReassignMain.do?procName=PA Process&taskName=DetailRegistration&taskId=6')
-  	  	.waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
-  	  	.setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
-  	  	.click("//input[@name='search']")
-  	  	.waitForElementPresent("//tr[@classname='odd']", 10000)
-        .pause(2000)
-  	  	.click("//tr[@classname='odd']/td[@classname='table_column odd']")
-  	  	.click("//input[@name='btnReassign']")
-        .pause(2000)
-  	  	.waitForElementPresent("//input[@name='userId']", 10000)
-  	  	.click("//input[@name='userId']")
-  	  	.click("//input[@classname='button btn']")
-  	  	.waitForElementPresent("//input[@classname='textfield_null text1']", 10000) 
+        .setValue("//input[@name='brbdAcceptanceVO.registerCode']", jsonArray[i]['login'])
+        .click("//input[@name='brbdAcceptanceVO.acptOrg_text']", function(){
+          browser
+          .dismiss_alert()
+        })
+        .click("//input[@name='save']") 
 
-  	  	//fill new 
+        
+
+        
+
+        //Distribute to fill new
+        browser
+        .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
+        .url('http://210.13.77.85:12000/ls/pub/taskmonitor/taskReassignMain.do?procName=PA Process&taskName=DetailRegistration&taskId=6')
+        .waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
+        .setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
+        .click("//input[@name='search']")
+        .waitForElementPresent("//tr[@classname='odd']", 10000)
+        .pause(2000)
+        .click("//tr[@classname='odd']/td[@classname='table_column odd']")
+        .click("//input[@name='btnReassign']")
+        .pause(2000)
+        .waitForElementPresent("//input[@name='userId']", 10000)
+        .click("//input[@name='userId']")
+        .click("//input[@classname='button btn']")
+        .waitForElementPresent("//input[@classname='textfield_null text1']", 10000) 
+
+        //fill new 
         .useXpath()
-  	  	.url('http://210.13.77.85:12000/ls/pub/workflow/GetWorkList.do?procName=PA Process&taskName=DetailRegistration&taskId=6&syskey_request_token=731f379c24509368cbc25acba4e853c5')
-  	  	.waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
-  	  	.setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
-  	  	.click("//input[@name='search']")
-  	  	.waitForElementPresent("//tr[@classname='odd']", 10000)
+        .url('http://210.13.77.85:12000/ls/pub/workflow/GetWorkList.do?procName=PA Process&taskName=DetailRegistration&taskId=6&syskey_request_token=731f379c24509368cbc25acba4e853c5')
+        .waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
+        .setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
+        .click("//input[@name='search']")
+        .waitForElementPresent("//tr[@classname='odd']", 10000)
         .pause(2000)
-  	  	.click("//tr[@classname='odd']/td[@classname='table_column odd']")
-  	  	.click("//input[@name='claim']")
-  	  	.waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
-  	  	.waitForElementPresent("//iframe[@name='MasterPolicy']", 30000)
-  	  	.frame('MasterPolicy')
-  	  	.frame('mainfr')
+        .click("//tr[@classname='odd']/td[@classname='table_column odd']")
+        .click("//input[@name='claim']")
+        .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
+        .waitForElementPresent("//iframe[@name='MasterPolicy']", 30000)
+        .frame('MasterPolicy')
+        .frame('mainfr')
         .waitForElementNotPresent("//div[@classname='maskdivgen']",100000)
-  	  	.waitForElementPresent("(//input[@name='__btnSave'])[position()=3]", 30000)
+        .waitForElementPresent("(//input[@name='__btnSave'])[position()=3]", 30000)
         .pause(1000)  
-  	  	.setValue("//input[@name='applyVersion']", jsonArray[i]['version']) 
+        .setValue("//input[@name='applyVersion']", jsonArray[i]['version']) 
         .click("//input[@name='applyDate_minguo']", function(){browser.accept_alert()})
-  	  	.setValue("//input[@name='applyDate_minguo']", jsonArray[i]['date']) 
-  	  	.click("//input[@name='rowid']") 
-  	  	.click("//input[@name='__btnModify']")
+        .setValue("//input[@name='applyDate_minguo']", jsonArray[i]['date']) 
+        .click("//input[@name='rowid']") 
+        .click("//input[@name='__btnModify']")
 
-  	  	// Insurance Person 
+        // Insurance Person 
         var name1 = ('Kobe'+Math.floor((Math.random() * 1000000) + 1));
         browser
         .setValue("//input[@name='policyHolderName']", name1)
         .setValue("//input[@name='policyHolderBirthDay_minguo']", jsonArray[i]['birthDay'])
         .setValue("//input[@name='policyHolderGender_text']", '1')
-        .setValue("//input[@name='policyHolderJobCateId_text']", 'A101')
+        .setValue("//input[@name='policyHolderJobCateId_text']", jsonArray[i]['jobCateId'])
         .setValue("//input[@name='policyHolderJobClass']", '1')
-        .setValue("//textarea[@name='policyHolderAddrAddress1']", 'tester')
-        .click("//input[@name='insured.relationToPH_text']", function(){browser.dismiss_alert()})
-        .setValue("//input[@name='insured.relationToPH_text']", '0')
+        .setValue("//textarea[@name='policyHolderAddrAddress1']", '新北市三重區正義北路１９５號六樓',function(){browser.dismiss_alert()})
         .setValue("//input[@name='insured.marriageId_text']", '1')
+        .setValue("//textarea[@name='insured.address.address1']", '新北市三重區正義北路１９５號六樓')
+        
         .click("//input[@name='__btnSave']")
         .pause(1000) 
 
-  	  	// fill the insurance data
+        // fill the insurance data
         .waitForElementNotPresent("//div[@classname='maskdivgen']",100000)
-  	  	.waitForElementPresent("(//input[@name='__btnSave'])[position()=3]", 30000)
-  	  	.waitForElementPresent("(//input[@name='rowid'])[position()=2]", 30000)
+        .waitForElementPresent("(//input[@name='__btnSave'])[position()=3]", 30000)
+        .waitForElementPresent("(//input[@name='rowid'])[position()=2]", 30000)
         .pause(1000) 
-  	  	.click("(//input[@name='rowid'])[position()=2]")
-  	  	.click("(//input[@name='__btnModify'])[position()=2]")
+        .click("(//input[@name='rowid'])[position()=2]")
+        .click("(//input[@name='__btnModify'])[position()=2]")
         .waitForElementNotPresent("//div[@classname='maskdivgen']",100000)
-  	  	.waitForElementPresent("(//input[@name='__btnSave'])[position()=3]", 30000)
-        .pause(1000) 
-  	  	.setValue("//input[@name='coverage.initialType_text']", jsonArray[i]['payway'])
-        .pause(1000)
+        .waitForElementPresent("(//input[@name='__btnSave'])[position()=3]", 30000)
+        .pause(3000) 
 
-            
-        !function outer(i) { browser
-        .elementIdDisplayed("//input[@name='coverage.stdPremAf']", function(){
+        
+        .elementIdDisplayed("//select[@name='coverage.versionTypeId']/option[@value='']",function(tag){
+         browser
+          .click("//select[@name='coverage.versionTypeId']")
+          .keys(['\uE015', '\uE006'])
+        })
+
+        //Fill initail payway
+        !function outer(i){
+        browser
+        .getAttribute("//input[@name='coverage.initialType_text']", "class",function(result){       
+          if(result.value == 'textfiled textfield_null readOnly ro'){}else{
           browser
+            .setValue("//input[@name='coverage.initialType_text']", jsonArray[i]['payway'])
+            }
+          })
+        }(i)   
+        !function outer(i) { browser
+        .elementIdDisplayed("//input[@name='coverage.stdPremAf']", function(){                
           // Fill initial Type and then fill chargePeriod and chargeYear
+          browser
           .isVisible("//input[@name='coverage.chargePeriod_text']", function(result){
             console.log(result.vaule + "chargePeriod_text")
             if (result.value == true) {
@@ -145,6 +185,7 @@ module.exports = {                //end parsered 函式呼叫傳入物件，"end
               })
             } else if (result.value =='undefined') {}
           })
+
 
           // Guarantee charge year
           .isVisible("//input[@name='coverage.coveragePeriod']", function(result){
@@ -466,7 +507,7 @@ module.exports = {                //end parsered 函式呼叫傳入物件，"end
         var id2 = makeid()
         browser
         .setValue("//input[@name='beneficary.certiCode']", id2)
-        //benificial順位
+        //benificial順位 optional
         // .clearValue("//input[@name='beneficary.shareOrder']") 
         // .setValue("//input[@name='beneficary.shareOrder']",1) 
         .clearValue("//input[@name='beneficary.avgIndi_text']") 
@@ -578,57 +619,57 @@ module.exports = {                //end parsered 函式呼叫傳入物件，"end
         },false)}(i)
 
         browser
-    		.click("//input[@name='btnSubmit']", function(){browser.accept_alert()})
-    		.waitForElementPresent("//div[@classname='header_logo_ls']", 30000)
+        .click("//input[@name='btnSubmit']", function(){browser.accept_alert()})
+        .waitForElementPresent("//div[@classname='header_logo_ls']", 30000)
 
 
 
-    		// distribute to confirm
-    		.url('http://210.13.77.85:12000/ls/pub/taskmonitor/taskReassignMain.do?procName=PA Process&taskName=Verification&taskId=10')
-      	.waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
-  	  	.setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
-  	  	.click("//input[@name='search']")
-  	  	.waitForElementPresent("//tr[@classname='odd']", 10000)
+        // distribute to confirm
+        .url('http://210.13.77.85:12000/ls/pub/taskmonitor/taskReassignMain.do?procName=PA Process&taskName=Verification&taskId=10')
+        .waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
+        .setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
+        .click("//input[@name='search']")
+        .waitForElementPresent("//tr[@classname='odd']", 10000)
         .pause(3000)
-  	  	.click("//tr[@classname='odd']/td[@classname='table_column odd']")
-  	  	.click("//input[@name='btnReassign']")
-  	  	.waitForElementPresent("//input[@name='userId']", 10000)
-  	  	.click("//input[@name='userId']")
-  	  	.click("//input[@classname='button btn']")
-  	  	.waitForElementPresent("//input[@classname='textfield_null text1']", 10000) 
+        .click("//tr[@classname='odd']/td[@classname='table_column odd']")
+        .click("//input[@name='btnReassign']")
+        .waitForElementPresent("//input[@name='userId']", 10000)
+        .click("//input[@name='userId']")
+        .click("//input[@classname='button btn']")
+        .waitForElementPresent("//input[@classname='textfield_null text1']", 10000) 
 
-  	  	// turn to confirm
-  	  	.url('http://210.13.77.85:12000/ls/pub/workflow/GetWorkList.do?procName=PA Process&taskName=Verification&taskId=10&syskey_request_token=752ba247eba263311fb36ec58db42536')
-  	  	.waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
-  	  	.setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
-  	  	.click("//input[@name='search']")
-  	  	.waitForElementPresent("//tr[@classname='odd']", 10000)
+        // turn to confirm
+        .url('http://210.13.77.85:12000/ls/pub/workflow/GetWorkList.do?procName=PA Process&taskName=Verification&taskId=10&syskey_request_token=752ba247eba263311fb36ec58db42536')
+        .waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
+        .setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
+        .click("//input[@name='search']")
+        .waitForElementPresent("//tr[@classname='odd']", 10000)
         .pause(3000)
-  	  	.click("//tr[@classname='odd']/td[@classname='table_column odd']")
-  	  	.click("//input[@name='claim']")
-  	  	.waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
-  	  	.waitForElementPresent("//iframe[@name='MasterPolicy']", 30000)
-  	  	.frame('MasterPolicy')
-  	  	.frame('mainfr')
+        .click("//tr[@classname='odd']/td[@classname='table_column odd']")
+        .click("//input[@name='claim']")
+        .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
+        .waitForElementPresent("//iframe[@name='MasterPolicy']", 30000)
+        .frame('MasterPolicy')
+        .frame('mainfr')
         .waitForElementNotPresent("//div[@classname='maskdivgen']",100000)
-  	  	.waitForElementPresent("//input[@name='btnSubmit']", 30000)
-  	  	.pause(3000)
-  	  	.click("//input[@name='btnSubmit']" , function(){browser.accept_alert()})
-  	  	.waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
-
-  	  	// distribute to manual confirmation
-  	  	.url('http://210.13.77.85:12000/ls/pub/taskmonitor/taskReassignMain.do?procName=PA Process&taskName=ManualUW&taskId=8')
-  	  	.waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
-  	  	.setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
-  	  	.click("//input[@name='search']")
-  	  	.waitForElementPresent("//tr[@classname='odd']", 10000)
+        .waitForElementPresent("//input[@name='btnSubmit']", 30000)
         .pause(3000)
-  	  	.click("//tr[@classname='odd']/td[@classname='table_column odd']")
-  	  	.click("//input[@name='btnReassign']")
-  	  	.waitForElementPresent("//input[@name='userId']", 10000)
-  	  	.click("//input[@name='userId']")
-  	  	.click("//input[@classname='button btn']")
-  	  	.waitForElementPresent("//input[@classname='textfield_null text1']", 10000) 
+        .click("//input[@name='btnSubmit']" , function(){browser.accept_alert()})
+        .waitForElementPresent("//div[@classname='header_logo_ls']", 30000) 
+
+        // distribute to manual confirmation
+        .url('http://210.13.77.85:12000/ls/pub/taskmonitor/taskReassignMain.do?procName=PA Process&taskName=ManualUW&taskId=8')
+        .waitForElementPresent("//input[@classname='textfield_null text1']", 10000)
+        .setValue("//input[@classname='textfield_null text1']", jsonArray[i]['number'])
+        .click("//input[@name='search']")
+        .waitForElementPresent("//tr[@classname='odd']", 10000)
+        .pause(3000)
+        .click("//tr[@classname='odd']/td[@classname='table_column odd']")
+        .click("//input[@name='btnReassign']")
+        .waitForElementPresent("//input[@name='userId']", 10000)
+        .click("//input[@name='userId']")
+        .click("//input[@classname='button btn']")
+        .waitForElementPresent("//input[@classname='textfield_null text1']", 10000) 
 
 
 
@@ -761,10 +802,8 @@ module.exports = {                //end parsered 函式呼叫傳入物件，"end
         .pause(1000)
         .click("//input[@classname='button btn']")
         .waitForElementPresent("//div[@classname='header_logo_ls']", 30000)
-        .pause(3000)
-        // .getText("(//td[@classname='table_text_td'])[position()=3]//div[@classname='input']",function(result){
-        //   writeStream.write(result.value)
-        // })
+        .pause(10000)
+       
         
         //阿蜜陀佛過可以 .saveScreenshot('./data/all/' +jsonArray[i]['number']+'search.png')
 
@@ -783,10 +822,12 @@ module.exports = {                //end parsered 函式呼叫傳入物件，"end
         .pause(3000)
         .saveScreenshot('./data/all/' +jsonArray[i]['number']+'search.png')
         .getText("(//td[@classname='table_text_td'])[position()=3]//div[@classname='input']",function(result){
-          writeStream.write(result.value)
+          writeStream.write(result.value+',')
         })
         .saveScreenshot('./data/all/' +jsonArray[i]['number']+'search.png')
         //end of 阿密陀佛一定生效
+      
+        
 
    }})
   }
