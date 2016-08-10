@@ -113,7 +113,7 @@ module.exports = {
         .setValue("//input[@name='bankCode1']",'004')
         .setValue("//input[@name='bankAccount1']",'168888888')
         .getAttribute("//input[@name='netAmount']","value",function(result){
-            if(result.value>='0'){
+            if(result.value>=0){
                 browser
                 .setValue("//input[@name='feeAmount']",result.value)    
             }else{ //金額抓正數處理
