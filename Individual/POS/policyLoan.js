@@ -94,6 +94,7 @@ module.exports = {
                 var loanAmount = loanNum.value
                 if(loanAmount > '0'){  //如果條件達到貸款標準
                     browser
+                    .clearValue("//input[@name='applyLoanAmount']")
                     .setValue("//input[@name='applyLoanAmount']",loanAmount)
                     .click("//input[@name='submitButton']")
                     .waitForElementPresent("//div[@classname='header_logo_ls']", 10000)
@@ -124,8 +125,10 @@ module.exports = {
                 browser
                 .click("(//input[@classname='button btn'])[position()=1]")
                 .waitForElementPresent("//div[@classname='header_logo_ls']", 10000) 
+                .click("//input[@name='dispatchChangeIds']")
+                .click("(//input[@classname='button btn'])[position()=5]")
                 .getText("//div[@classname='label2']",function(result){
-                    writeStream.write('\r\n'+result.value+',')
+                    writeStream.write(result.value)
         })//END OF 保單借款
             })
                 }else{
